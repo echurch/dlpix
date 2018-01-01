@@ -1,13 +1,9 @@
-click==6.7
-h5py==2.7.0
-Keras>=2.0.0
-matplotlib==2.0.2
-notebook==5.0.0
+tensorflow==1.2.1
 numpy==1.12.1
-pandas==0.20.2
-Pillow==4.1.1
-protobuf==3.3.0
-requests==2.17.3
-scipy==0.19.0
-stevedore==1.23.0
-tensorflow>=1.0.0 # pyup: ignore 
+Keras==2.0.8
+pip==9.0.1
+click==6.7
+setuptools==36.0.1
+h5py==2.7.0
+pytest==3.3.1
+recommonmark==0.4.0
