@@ -203,8 +203,9 @@ def plot_model(model_wts, file_list):
 @click.argument('file_list', nargs=-1)
 
 def train_nbn(steps, epochs,weights, history, output, file_list):
-  from proton_decay_study.generators.gen3d_v5 import Gen3D_v5
+  from proton_decay_study.generators.gen2d_v5 import Gen2D_v5
   from proton_decay_study.models.nothinbutnet import Nothinbutnet
+  from proton_decay_study.models.vgg16_hand_crafted import VGG16_hand_crafted
   import tensorflow as tf
   logging.basicConfig(level=logging.DEBUG)
   logger = logging.getLogger()
@@ -216,17 +217,17 @@ def train_nbn(steps, epochs,weights, history, output, file_list):
 
   import pdb
 
-  generator = Gen3D_v5(file_list, 'image/wires','label/type', batch_size=80, middle=False)
-#  generator = MultiFileDataGenerator(file_list, 'image/wires','label/type', batch_size=20, middle=True)
+  generator = Gen2D_v5(file_list, 'image/wires','label/type', batch_size=40, middle=False)
+#  generator = Gen3D_v5(file_list, 'image/wires','label/type', batch_size=80, middle=False)
 #  end = max(len(file_list)-10,0)
   import glob
 #  file_list_v =  glob.glob("/microboone/ec/valid_singles/*")
 #  file_list_v =  glob.glob("/data/dlhep/quantized_h5files/*.h5")
-  validation_generator = Gen3D_v5(file_list, 'image/wires', 'label/type', batch_size=80, middle=False)
-#  validation_generator = MultiFileDataGenerator(file_list, 'image/wires','label/type', batch_size=20, middle=True)
+  validation_generator = Gen2D_v5(file_list, 'image/wires', 'label/type', batch_size=40, middle=False)
+#  validation_generator = Gen3D_v5(file_list, 'image/wires', 'label/type', batch_size=80, middle=False)
 
-  model = Nothinbutnet(generator)
-#  model = VGG16(generator)
+#  model = Nothinbutnet(generator)
+  model = VGG16_hand_crafted(generator)
   global _model
   _model = model
   if weights is not None:
@@ -264,6 +265,7 @@ def train_nbn(steps, epochs,weights, history, output, file_list):
 #                                                      write_grads=True,
 #                                                      write_images=True)
                                       ])
+
   model.save(output)
 
 #  pdb.set_trace()

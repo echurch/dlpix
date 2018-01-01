@@ -25,19 +25,17 @@ class Gen2D_v5(BaseDataGenerator):
 #    self.truth = ["eminus", "eplus", "proton", "pizero", "piplus", "piminus", "muminus",  "muplus",  "kplus", "gamma"]
 
 #    self.truth = ["eplus", "eminus", "piminus", "muminus",   "kplus", "gamma"]
-    self.truth = ["eminus", "piminus", "muminus",   "kplus"]
+    self.truth = ["eminus", "piminus", "muminus", "kplus"]
     self.labelvec = np.zeros(10)
     
     self.logger.info("Initializing h5 file object with value: {}".format(self._files[self.current_index]))
 
-
     self.file_index = int(np.random.randint(len(self._files), size=1))
     self.current_file = h5py.File(self._files[self.file_index], 'r')
-
-
-    self.current_index = 0
+    self.current_index = int(np.random.randint(self.current_file[self._dataset].shape[0], size=1))
     self.handlelabels(self.file_index)
     self.filterZeros()
+
 
 
   def filterZeros(self):
@@ -106,8 +104,9 @@ class Gen2D_v5(BaseDataGenerator):
 
     multifile = False
 
-    xapp = np.empty(np.append(1,self.current_file[self._dataset].shape[1:]))[:,2,:,:]
-    xapp = np.reshape(xapp,(1,1,xapp.shape[-2],xapp.shape[-1]) )
+    xapp = np.empty(np.append(1,self.current_file[self._dataset].shape[1:]))
+
+    #xapp = np.reshape(xapp,(1,1,xapp.shape[-2],xapp.shape[-1]) )
     yapp = np.empty(self.current_file[self._labelset].shape)
     nevts = 0
 
@@ -123,8 +122,10 @@ class Gen2D_v5(BaseDataGenerator):
       multifile = True
 
       tmp_x =  self.current_file[self._dataset][self.current_index] # Note, no longer ":"! Just take one event. EC, 4-Oct-2017.
-      x = np.ndarray(shape=(1, 1,  tmp_x.shape[1],  tmp_x.shape[2]))
-      x[0] = tmp_x[2,:,:] 
+
+#      x = np.ndarray(shape=(1, 1,  tmp_x.shape[1],  tmp_x.shape[2]))
+      x = np.ndarray(shape=(1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))
+#      x[0] = tmp_x[2,:,:] 
       y = self.current_file[self._labelset]
 
       if len(x) == 0 or len(y)==0 or not len(x) == len(y):
@@ -137,9 +138,11 @@ class Gen2D_v5(BaseDataGenerator):
     if multifile:
       return (xapp,yapp)
 
-    tmp_x = self.current_file[self._dataset][self.current_index:self.current_index+self.batch_size]
-    x = np.ndarray(shape=(1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))
-    x[0] = tmp_x
+#    import pdb
+#    pdb.set_trace()
+#    tmp_x = self.current_file[self._dataset][self.current_index:self.current_index+self.batch_size]
+#    x = np.ndarray(shape=(1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))
+#    x[0] = tmp_x
     y = self.current_file[self._labelset]
 
     if len(x) == 0 or len(y)==0 or not len(x) == len(y):

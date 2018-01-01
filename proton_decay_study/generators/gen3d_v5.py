@@ -24,8 +24,8 @@ class Gen3D_v5(BaseDataGenerator):
     self.current_index=0
 #    self.truth = ["eminus", "eplus", "proton", "pizero", "piplus", "piminus", "muminus",  "muplus",  "kplus", "gamma"]
 
-#    self.truth = ["eplus", "eminus", "piminus", "muminus",   "kplus", "gamma"]
-    self.truth = ["eminus", "piminus", "muminus",   "kplus"]
+    self.truth = ["eplus", "eminus", "piminus", "muminus", "gamma"]
+
     self.labelvec = np.zeros(10)
     
     self.logger.info("Initializing h5 file object with value: {}".format(self._files[self.current_index]))
