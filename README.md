@@ -14,7 +14,7 @@ Eric should probably do all this before collaborators can expect to do useful CN
 allow proceeding to (2), and then eventually circling back to robustify (1).
 
 (1) Data converted from ROOT TTrees, in which 100 evts of each type were created, to numpy arrays. (Enough to barely start to train networks,  ...)
-    (a) Done by hand, thus far. I put 1 10-evt file of pi0s and e-s, each ~0.1 TB! into the data/ directory of this repo. Which is a dicey decision.
+    (a) Done by hand, thus far. I put 1 10-evt file of pi0s and e-s, each ~0.1 GB, into the data/ directory of this repo. Which is a dicey decision.
     (b) Alternatively, root2numpy which I used  by-hand so far, could be installed. One can not just pip install it (at least on OSX).
     	(i) requires root and numpy installed, then a trick. The second is easy, the first is the usual ordeal, but not hard. Cue the Hitler/Tevatron video.
 	    See https://github.com/scikit-hep/root_numpy/issues/157, for the third: hints on proceeding on OSX. 
