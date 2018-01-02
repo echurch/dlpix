@@ -13,7 +13,7 @@ dev_reqs = [str(ir.req) for ir in parse_requirements('requirements_dev.txt',
     session=pip.download.PipSession())]
 
 setup(
-    name='proton_decay_study',
+    name='dlpix_wire',
     version='0.1.0',
     description="Looks for proton decay. USING NEURAL NETWORKS",
     long_description="""
@@ -27,29 +27,29 @@ setup(
     """,
     author="Kevin Wierman",
     author_email='kevin.wierman@pnnl.gov',
-    url='https://github.com/HEP-DL/proton_decay_study',
+    url='https://github.com/HEP-DL/dlpix_wire',
     packages=find_packages(),
-    package_dir={'proton_decay_study':
-                 'proton_decay_study'},
+    package_dir={'dlpix_wire':
+                 'dlpix_wire'},
     entry_points={
         'console_scripts': [
-            'proton_decay_study=proton_decay_study.cli:main',
-            'vgg_training=proton_decay_study.cli:standard_vgg_training',
-            'kjw_train=proton_decay_study.cli:advanced_vgg_training',
-            'test_file_input=proton_decay_study.cli:test_file_input',
-            'test_threaded_files=proton_decay_study.cli:test_threaded_file_input',
-            'plot_model=proton_decay_study.cli:plot_model',
-            'train_kevnet=proton_decay_study.cli:train_kevnet',
-            'train_nbn=proton_decay_study.cli:train_nbn',
-            'train_nbn_prl=proton_decay_study.cli:train_nbn_prl',
-            'make_kevnet_featuremap=proton_decay_study.cli:make_kevnet_featuremap'
+            'dlpix_wire=dlpix_wire.cli:main',
+            'vgg_training=dlpix_wire.cli:standard_vgg_training',
+            'kjw_train=dlpix_wire.cli:advanced_vgg_training',
+            'test_file_input=dlpix_wire.cli:test_file_input',
+            'test_threaded_files=dlpix_wire.cli:test_threaded_file_input',
+            'plot_model=dlpix_wire.cli:plot_model',
+            'train_kevnet=dlpix_wire.cli:train_kevnet',
+            'train_nbn=dlpix_wire.cli:train_nbn',
+            'train_nbn_prl=dlpix_wire.cli:train_nbn_prl',
+            'make_kevnet_featuremap=dlpix_wire.cli:make_kevnet_featuremap'
         ]
     },
     include_package_data=True,
     install_requires=reqs,
     license="MIT license",
     zip_safe=False,
-    keywords='proton_decay_study',
+    keywords='dlpix_wire',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
