@@ -5,7 +5,12 @@ I think I would advocate just using a virtual environment in python, no docker.
 Download this repo, which you've already done to be seeing this, and do the following.
 
 pip install -r requirements.txt
-
+python setup.py clean
+python setup.py build
+python setup.py install
+cd dlpix_wire
+# example command. Note the command-line-interface usage prescribed in cli.py, in which train_nbn is one "hook."
+train_nbn --steps=1 --epochs=2 --history=wire-pix.json --output=wire-pix.h5 /microboone/ec/dune-root/pi0/*.npy
 
 ************************************************************************************************************************
 

@@ -7,7 +7,7 @@ import logging
 import tensorflow as tf
 from dlpix_wire.models.vgg16 import VGG16
 from dlpix_wire.generators.multi_file import MultiFileDataGenerator
-from dlpix_wire.utils_kuza55.multi_gpu import make_parallel
+
 
 from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard, ReduceLROnPlateau
 import signal
@@ -203,9 +203,9 @@ def plot_model(model_wts, file_list):
 @click.argument('file_list', nargs=-1)
 
 def train_nbn(steps, epochs,weights, history, output, file_list):
-  from dlpix_wire.generators.gen2d_v5 import Gen2D_v5
+  from dlpix_wire.generators.gen_wires_npy import Gen_wires
   from dlpix_wire.models.nothinbutnet import Nothinbutnet
-  from dlpix_wire.models.vgg16_hand_crafted import VGG16_hand_crafted
+#  from dlpix_wire.models.vgg16_hand_crafted import VGG16_hand_crafted
   import tensorflow as tf
   logging.basicConfig(level=logging.DEBUG)
   logger = logging.getLogger()
@@ -217,13 +217,13 @@ def train_nbn(steps, epochs,weights, history, output, file_list):
 
   import pdb
 
-  generator = Gen2D_v5(file_list, 'image/wires','label/type', batch_size=40, middle=False)
-#  generator = Gen3D_v5(file_list, 'image/wires','label/type', batch_size=80, middle=False)
+#  generator = Gen2D_v5(file_list, 'image/wires','label/type', batch_size=40, middle=False)
+  generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=10, middle=False)
 #  end = max(len(file_list)-10,0)
   import glob
 #  file_list_v =  glob.glob("/microboone/ec/valid_singles/*")
 #  file_list_v =  glob.glob("/data/dlhep/quantized_h5files/*.h5")
-  validation_generator = Gen2D_v5(file_list, 'image/wires', 'label/type', batch_size=40, middle=False)
+  validation_generator = Gen_wires(file_list, 'image/wires', 'label/type', batch_size=40, middle=False)
 #  validation_generator = Gen3D_v5(file_list, 'image/wires', 'label/type', batch_size=80, middle=False)
 
 #  model = Nothinbutnet(generator)
