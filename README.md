@@ -14,9 +14,9 @@ Eric should probably do all this before collaborators can expect to do useful CN
 
 (1) Data converted from ROOT Trees in which they currently sit to numpy arrays, say.
     (a) This should work, as the trees consist of simple data types, and vectors thereof.
-    (b) root2numpy could be installed, which has been a pain in the arse in the past.  Can not just pip install it.
+    (b) root2numpy could be installed, which has been a pain in the arse in the past.  Can not just pip install it (at least on OSX).
     	(i) requires root and numpy installed. The second is easy, the first is the usual ordeal. Cue the Hitler/Tevatron video.
-	(ii) Then see https://github.com/scikit-hep/root_numpy/issues/157
+	(ii) Then see https://github.com/scikit-hep/root_numpy/issues/157, ...
 	(iii) since I don't want to include all this in the requirements of this code, for now I will convert the needed TTrees on my
 	      laptop where I have successfully conducted the install gymnastics, and provide the numpy .dat files  to interested parties.
 (2) A new generator needs to be written in the generator directory to read the data
