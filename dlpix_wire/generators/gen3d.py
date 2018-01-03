@@ -55,8 +55,8 @@ class Gen3D(BaseDataGenerator):
       d = {}
 #      pdb.set_trace()
       ptype = str(self._files[index].split("/")[-1].split("_")[0]) # "kplus", say
-      self._dataset = self.current_file.keys()[0]
-      self._labelset = self.current_file.keys()[1]
+      self._dataset = list(self.current_file.keys())[0]
+      self._labelset = list(self.current_file.keys())[1]
       d[self._dataset] = y
       labelvectmp = np.array(self.labelvec)
 #      print "handle1evtfiles: particle and index are: " + str(ptype) + "  " + str(self.truth.index(ptype))
@@ -70,7 +70,7 @@ class Gen3D(BaseDataGenerator):
   def output(self):
     current_index= self.current_index
     file_index = self.file_index
-    x,y = self.next()
+    x,y = next(self)
     self.current_index =current_index
     self.file_index = file_index
     return x[0].shape
@@ -79,7 +79,7 @@ class Gen3D(BaseDataGenerator):
   def input(self):
     current_index= self.current_index
     file_index = self.file_index
-    x,y = self.next()
+    x,y = next(self)
     self.current_index =current_index
     self.file_index = file_index
     # import pdb
@@ -103,7 +103,7 @@ class Gen3D(BaseDataGenerator):
   import signal
 #  signal.signal(signal.SIGINT, debug_signal_handler)
 
-  def next(self):
+  def __next__(self):
     """
       This should iterate over both files and datasets within a file.
     """

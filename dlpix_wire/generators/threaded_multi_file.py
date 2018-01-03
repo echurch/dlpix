@@ -4,7 +4,7 @@ import h5py
 import logging
 import threading
 import subprocess
-import Queue
+import queue
 import traceback
 import signal
 import sys
@@ -23,7 +23,7 @@ class SingleFileThread(threading.Thread):
   __ThreadExitFlag__ = 1
 
   # Holds the current thread queue
-  queue = Queue.Queue(10000)
+  queue = queue.Queue(10000)
 
   # Locks the thread queue
   queueLock = threading.Lock()
@@ -86,7 +86,7 @@ class SingleFileThread(threading.Thread):
         try:
           try:
             self.single_thread_lock.acquire()
-            self._buffer  = self._filegen.next()
+            self._buffer  = next(self._filegen)
           except StopIteration:
             self.logger.warning("Hit Stop Iteration")
             self._buffer  = None
@@ -168,12 +168,12 @@ class ThreadedMultiFileDataGenerator(BaseDataGenerator):
 
   @property
   def output(self):
-    x,y = self.next()
+    x,y = next(self)
     return x[0].shape
 
   @property
   def input(self):
-    x,y = self.next()
+    x,y = next(self)
     return y[0].shape[0]
 
   def __len__(self):
@@ -183,7 +183,7 @@ class ThreadedMultiFileDataGenerator(BaseDataGenerator):
     """
     return 0
 
-  def next(self):
+  def __next__(self):
     #see if there's any pre-fetched data
 
     # If the filename queue is empty, fill it back up again.
@@ -208,15 +208,15 @@ class ThreadedMultiFileDataGenerator(BaseDataGenerator):
         thread.single_thread_lock.release()
         if new_buff is None:
           self.logger.warning("Found null dataset")
-          return self.next()
+          return next(self)
         x,y = new_buff
         if not len(x) == len(y):
           self.logger.warning("Found incorrect dataset size")
-          return self.next()
+          return next(self)
         return new_buff
       else:
         self.current_thread_index+=1
       thread.single_thread_lock.release()
     self.logger.warning("Threaded buffer found queue is empty. Trying again...")
-    return self.next()
+    return next(self)
 

@@ -216,7 +216,7 @@ def train_nbn(steps, epochs,weights, history, output, file_list):
     sess.run(init)
 
   import pdb
-
+  pdb.set_trace()
 #  generator = Gen2D_v5(file_list, 'image/wires','label/type', batch_size=40, middle=False)
   generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=10, middle=False)
 #  end = max(len(file_list)-10,0)
