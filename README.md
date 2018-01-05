@@ -27,9 +27,9 @@ What needs doing now for pixel/readout studies to read up Eric's Dune-like 4 APA
 
 Notes on data preparation.
 
-* Data is converted from ROOT TTrees, in which 100 evts of each type were created, to numpy arrays.
-    * Doing this by hand on my laptop where root2numpy is installed, thus far. I put one 10-evt (not even 100 evts) file of pi0s and e-s, each ~0.1 GB, into the data/ directory of this repo.  See pytools/convert_example.py in this repo.
-    * Alternatively, root2numpy  could be installed in this repo. One can not just pip install it (at least on OSX).
+* Data is converted from ROOT TTrees, in which 200 evts of each type were created, to numpy arrays.
+    * Doing this by hand on my laptop where root2numpy is installed, thus far. I put files of *only 10 evts* of pi0s, gammas and e-s, each ~25 MB, into the data/ directory of this repo.  See pytools/convert_example.py in this repo for the script I used. We will need to shuttle around bigger files with more events by some means other than github.
+    * Alternatively to doing conversion by hand in another location each time, root2numpy  could be installed in this repo. One issue is that one can not just pip install it (at least on OSX).
     	* root2numpy requires root and numpy installed, then a trick for OSX to get root2numpy installed. For the trick, see https://github.com/scikit-hep/root_numpy/issues/157 for  proceeding on OSX. Also, heads-up: do not save with py2/3 and try to load the file back with py3/2. Consistency is demanded.
 	* Eventually, perhaps I'll put the whole root_numpy requirements into this repo, leaving it to the user to install ROOT beforehand. (Cue the Hitler Tevatron youtube video.) But part of the goal of this Deep Learning exercise is to keep the data prep out of this repository, so let's discuss how to proceed. Perhaps data prep is a good, largely orthogonal student project.
 
