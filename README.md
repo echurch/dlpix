@@ -13,7 +13,7 @@ Download this repo, which you may've already done to be seeing this, and do the 
 example command. Note the command-line-interface usage prescribed in cli.py, in which train_nbn is one command line "hook."
 * train_nbn --steps=1 --epochs=20 --history=wire-pix.json --output=wire-pix.h5 data/\*/singlepix_ana_\*.npy
 
-After editing any python, it seems hopping back up to dlpix and doing 'python setup.py install' is necessary. Sometimes it isn't.  Not sure I get it.
+After editing any python, hop back up to dlpix and do 'python setup.py install'. 
 
 ************************************************************************************************************************
 
