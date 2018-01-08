@@ -22,7 +22,7 @@ class VGG16_hand_crafted(Model):
 
     self.logger.info(self._input.shape)
 
-    # drop this to ~240x240 before even getting going, as a "sanity" check.
+    # Could drop this to ~240x240 before even getting going, as a "sanity" check.
     layer = MaxPooling2D((8, 8), strides=(8, 8),  data_format='channels_first', 
                           name='block0_pool')(self._input)
     self.logger.info(layer.shape)

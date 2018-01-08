@@ -10,8 +10,8 @@ Download this repo, which you may've already done to be seeing this, and do the 
 * python setup.py install
 * cd dlpix_wire
 
-example command. Note the command-line-interface usage prescribed in cli.py, in which train_nbn is one command line "hook."
-* train_nbn --steps=1 --epochs=20 --history=wire-pix.json --output=wire-pix.h5 data/\*/singlepix_ana_\*.npy
+example command. Note the command-line-interface usage prescribed in cli.py, in which train_vgg is one command line "hook."
+* train_vgg --steps=1 --epochs=20 --history=wire-pix.json --output=wire-pix.h5 data/\*/singlepix_ana_\*.npy
 
 After editing any python, hop back up to dlpix and do 'python setup.py install'. 
 
@@ -20,10 +20,10 @@ After editing any python, hop back up to dlpix and do 'python setup.py install'.
  pixel/readout studies are in the following state:
 
 * A data generator exists in the generator directory to read the numpy wire-time data, converted from Eric's DUNE-like 4 APA root-file simulations.
-    * The above train_nbn command will in principle run a VGG16-like network to learn on pi0s, gammas, e-s.
+    * The above train_vgg command will in principle run a VGG16-like network to learn on pi0s, gammas, e-s.
 * A new generator to parse the pixel data needs to be similarly written.
     * Eric is doing this now ...
-
+    * once it works: train_nbn3D --steps=1 --epochs=10 --history=wire-pix.json  --output=wire-pix.h5 data/*/singlepix_ana_*.npy 
 
 ************************************************************************************************************************
 

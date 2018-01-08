@@ -194,6 +194,7 @@ def plot_model(model_wts, file_list):
 #  plt.savefig('pi+_acc-loss.png')
 
 
+
 @click.command()
 @click.option('--steps', default=1000, type=click.INT)
 @click.option('--epochs', default=1000, type=click.INT)
@@ -201,8 +202,7 @@ def plot_model(model_wts, file_list):
 @click.option('--history', default='history.json')
 @click.option('--output',default='stage1.h5')
 @click.argument('file_list', nargs=-1)
-
-def train_nbn(steps, epochs,weights, history, output, file_list):
+def train_vgg(steps, epochs,weights, history, output, file_list):
   from dlpix_wire.generators.gen_wires_npy import Gen_wires
   from dlpix_wire.models.nothinbutnet import Nothinbutnet
   from dlpix_wire.models.vgg16_hand_crafted import VGG16_hand_crafted
@@ -291,6 +291,105 @@ def train_nbn(steps, epochs,weights, history, output, file_list):
   logger.info("Done.")
 
 
+
+@click.command()
+@click.option('--steps', default=1000, type=click.INT)
+@click.option('--epochs', default=1000, type=click.INT)
+@click.option('--weights',default=None, type=click.Path(exists=True))
+@click.option('--history', default='history.json')
+@click.option('--output',default='stage1.h5')
+@click.argument('file_list', nargs=-1)
+def train_nbn3D(steps, epochs,weights, history, output, file_list):
+  from dlpix_wire.generators.gen3dpix_npy import Gen3D_pix
+  from dlpix_wire.models.nothinbutnet import Nothinbutnet
+
+  import tensorflow as tf
+  logging.basicConfig(level=logging.DEBUG)
+  logger = logging.getLogger()
+
+  init = tf.global_variables_initializer()
+
+  with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
+    sess.run(init)
+
+  import pdb
+#  pdb.set_trace()
+  generator = Gen3D_pix(file_list, 'image/pixels','label/type', batch_size=10, middle=False)
+
+#  end = max(len(file_list)-10,0)
+  import glob
+#  file_list_v =  glob.glob("/microboone/ec/valid_singles/*")
+#  file_list_v =  glob.glob("/data/dlhep/quantized_h5files/*.h5")
+  validation_generator = Gen3D_pix(file_list, 'image/pixels', 'label/type', batch_size=10, middle=False)
+
+
+  model = Nothinbutnet(generator)
+  global _model
+  _model = model
+  if weights is not None:
+    model.load_weights(weights)
+  logging.info("Starting Training")
+  training_output = model.fit_generator(generator, steps_per_epoch = steps, 
+                                      epochs=epochs,
+#                                      workers=4,
+                                      workers=1,
+                                      verbose=1,
+#                                      max_q_size=8,
+                                      max_q_size=4,
+                                      pickle_safe=False,
+                                      validation_data=validation_generator,
+                                      validation_steps = 3, # with batch_size=10 this gives enough events (30) to validate on. This is slow otherwise.
+                                      callbacks=[
+                                        ModelCheckpoint(output, 
+                                          monitor='loss', 
+                                          verbose=1, 
+                                          save_best_only=True, 
+                                          save_weights_only=True, 
+                                          mode='auto', 
+                                          period=10),
+                                        ReduceLROnPlateau(monitor='loss', # I changed from val_loss
+                                          factor=0.1, 
+                                          patience=5, # epochs
+                                          verbose=True, 
+                                          mode='auto', 
+                                          epsilon=1.0E-3, 
+                                          cooldown=0, 
+                                          min_lr=1.0E-9)
+#                                          TensorBoard(log_dir='./logs2',
+#                                                      histogram_freq=1, 
+#                                                      write_graph=True, 
+#                                                      write_grads=True,
+#                                                      write_images=True)
+                                      ])
+
+  model.save(output)
+
+
+#  pred10 = model.predict_generator(validation_generator,10) # 10 event predictions from last iteration of model -- I think
+#  The 3 is number of allowed classifications.
+  import numpy as np
+  pred10 = np.empty((0,3))
+  label10 = np.empty((0,3))
+
+  # Get 10 predictions
+  for i in range(10): # (100)
+    x,y = validation_generator.next()
+#    if i%100 == 0:
+    logging.info( "getting a prediction and a label for event " + str(i))
+
+
+    pred10 = np.row_stack((pred10,model.predict(x) ) )
+    label10 = np.row_stack((label10,y) ) 
+
+
+  training_history = {'epochs': training_output.epoch, 'acc': training_output.history['categorical_accuracy'], 'loss': training_output.history['loss'], 'val_acc': training_output.history['val_categorical_accuracy'], 'val_loss': training_output.history['val_loss'], 'val_predictions': np.around(pred10,decimals=3).tolist(), 'val_labels': np.around(label10,decimals=3).tolist() }
+  import json
+  open(history,'w').write(json.dumps(training_history))
+  logger.info("Done.")
+
+
+
+  
 
 @click.command()
 @click.option('--input', type=click.Path(exists=True))

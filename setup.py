@@ -40,7 +40,8 @@ setup(
             'test_threaded_files=dlpix_wire.cli:test_threaded_file_input',
             'plot_model=dlpix_wire.cli:plot_model',
             'train_kevnet=dlpix_wire.cli:train_kevnet',
-            'train_nbn=dlpix_wire.cli:train_nbn',
+            'train_vgg=dlpix_wire.cli:train_vgg',
+            'train_nbn3D=dlpix_wire.cli:train_nbn3D',
             'make_kevnet_featuremap=dlpix_wire.cli:make_kevnet_featuremap'
         ]
     },

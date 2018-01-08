@@ -4,11 +4,11 @@ import logging
 import numpy as np
 import pdb
     
-class Gen_wires(BaseDataGenerator):
+class Gen3D_pix(BaseDataGenerator):
   """
     Creates a generator for a list of files
   """
-  logger = logging.getLogger("pixgen.gen.gen_wires")
+  logger = logging.getLogger("pixgen.gen.gen3d_pix")
 
   def __init__(self, datapaths, datasetname, 
                labelsetname, batch_size=10, middle=False):
@@ -51,23 +51,22 @@ class Gen_wires(BaseDataGenerator):
 # Must bin the data evt-by-evt, since each event has different number of data elements (sim charge depositions)
 
 
-    y = np.zeros((len(self.current_file['sdEvt']),3,2560,3200))
+    y = np.zeros((len(self.current_file['sdEvt']),250,600,250))
     ind = self.current_index
     
     self.logger.info("Binning data for event {}".format(ind))
-    ### Should probably do something here to mask out data that gets negative x's or lands in a non-central TPC. EC, 7-Jan-2018.
-    ### In fact, replace integer bin numbers below with actual bounds on bins
-    
-    data = np.array((self.current_file[ind,]['sdView'],self.current_file[ind,]['sdChan'],self.current_file[ind,]['sdX'] ))
+    ### Should porbably do something here to mask out data that gets negative x's or lands in a non-central TPC. EC, 7-Jan-2018.
+    data = np.array((self.current_file[ind,]['sdX'],self.current_file[ind,]['sdY'],self.current_file[ind,]['sdX'] ))
     dataT = data.T
     # dataT.shape => 3678, 3 e.g. meaning 3678 deositions.
                                     ##  view,chan,x
-    H,edges = np.histogramdd(dataT,bins=(3,2560,3200),weights=self.current_file[ind,]['sdElec'])
+    H,edges = np.histogramdd(dataT,bins=(250,600,250),weights=self.current_file[ind,]['sdElec'])
 #                    (Pdb) H.shape
-#                    (3, 2560, 3200)
+
 #                    
+
     y[ind,] = H
-      
+
     d = {}
 
     ptype = self._files[index].split("/")[-1].split("_")[-1].split(".")[0]
@@ -75,7 +74,8 @@ class Gen_wires(BaseDataGenerator):
 #    self._dataset = list(self.current_file.keys())[0]
 #    self._labelset = list(self.current_file.keys())[1]
 
-    self._dataset = "image/wires"
+    # Setting these *set values were for hdf5 only to keep code from breaking ... I don't think these will be used elsewhere (EC, 7-Jan-2018)
+    self._dataset = "image/pixels"
     self._labelset = "label/type"
     d[self._dataset] = y
     labelvectmp = np.array(self.labelvec)
@@ -136,9 +136,9 @@ class Gen_wires(BaseDataGenerator):
 
     multifile = False
 
-## This line and xapp.append below need to be uncommented for 3D models, not so for 2D.
-#    xapp = np.empty(np.append(1,np.append(1,self.current_file[self._dataset].shape[1:])))
-    xapp = np.empty(np.append(1,self.current_file[self._dataset].shape[1:]))
+## This line and x=np.ndarray(1,1,tmp_x...) below need to be uncommented for 3D models, not so for 2D.
+    xapp = np.empty(np.append(1,np.append(1,self.current_file[self._dataset].shape[1:])))
+#    xapp = np.empty(np.append(1,self.current_file[self._dataset].shape[1:]))
     yapp = np.empty(self.current_file[self._labelset].shape)
     nevts = 0
 
@@ -156,8 +156,8 @@ class Gen_wires(BaseDataGenerator):
       tmp_x =  self.current_file[self._dataset][self.current_index] # Note, no longer ":"! Just take one event. EC, 4-Oct-2017.
 
 
-      x = np.ndarray(shape=(1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))
-#      x = np.ndarray(shape=(1, 1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))
+#      x = np.ndarray(shape=(1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))
+      x = np.ndarray(shape=(1, 1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))
       x[0] = tmp_x 
       y = self.current_file[self._labelset]
 
