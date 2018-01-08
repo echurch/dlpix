@@ -35,12 +35,12 @@ class Nothinbutnet(Model):
 #    pdb.set_trace()
     ## EC: This had been 0th layer before 20-Sep-2017.
 #    layer = Conv3D(32, (3,4,self._input.shape[-1]), strides=(3,4,1),
-    layer = Conv3D(32, (4,4,4), strides=(4,4,4), 
+    layer = Conv3D(32, (1,1,1), strides=(1,1,1), 
                    activation='relu', padding='valid', #'same', 
                    data_format='channels_first',
                    name='block1_conv1')(layer)
     self.logger.info(layer.shape)
-    layer = MaxPooling3D((3, 3, 3), strides=(3,3, 3),
+    layer = MaxPooling3D((2,2,2), strides=(2,2,2),
                           data_format='channels_first', 
                           name='block1_pool')(layer)
     self.logger.info(layer.shape)
@@ -48,7 +48,7 @@ class Nothinbutnet(Model):
     self.logger.info(layer.shape)
     layer = Dropout(0.1)(layer)
 
-    layer = Conv3D(64, (3,3,3), strides=(2,2,2), 
+    layer = Conv3D(64, (3,3,3), strides=(3,3,3), 
                    activation='relu', padding='same', 
                    data_format='channels_first',
                    name='block2_conv1')(layer)
