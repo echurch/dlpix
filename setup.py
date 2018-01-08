@@ -41,7 +41,6 @@ setup(
             'plot_model=dlpix_wire.cli:plot_model',
             'train_kevnet=dlpix_wire.cli:train_kevnet',
             'train_nbn=dlpix_wire.cli:train_nbn',
-            'train_nbn_prl=dlpix_wire.cli:train_nbn_prl',
             'make_kevnet_featuremap=dlpix_wire.cli:make_kevnet_featuremap'
         ]
     },
