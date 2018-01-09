@@ -79,7 +79,8 @@ class Gen3D_pix(BaseDataGenerator):
     self._labelset = "label/type"
     d[self._dataset] = y
     labelvectmp = np.array(self.labelvec)
-#      print "handle1evtfiles: particle and index are: " + str(ptype) + "  " + str(self.truth.index(ptype))
+#    print ("handle1evtfiles: particle and index are: " + str(ptype) + "  " + str(self.truth.index(ptype)))
+
     labelvectmp[self.truth.index(ptype)] = 1
 
 
