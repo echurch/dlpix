@@ -19,9 +19,9 @@ After editing any python, hop back up to dlpix and do 'python setup.py install'.
  pixel/readout studies are in the following state:
 
 * A data generator exists in the generator directory to read the numpy wire-time data, converted from Eric's DUNE-like 4 APA root-file simulations.
-    * The above train_vgg command will in principle run a VGG16-like network to learn on pi0s, gammas, e-s.
+    * The following train_vgg command will in principle run a VGG16-like network to learn on pi0s, gammas, e-s.
     * train_vgg --steps=1 --epochs=20 --history=wire-pix.json --output=wire-pix.h5 data/\*/singlepix_ana_\*.npy
-* A new generator exists to parse the pixel data and run/train/infer on the pixel data too. 
+* A new generator exists to parse the pixel data and run/train/infer on the pixel data too for same samples.
     * train_nbn3D --steps=1 --epochs=10 --history=wire-pix.json  --output=wire-pix.h5 data/\*/singlepix_ana_\*.npy
     * 3D CNN in gen3D_pixel_npy.py has lots of room for improvement.
 * Not obvious either of above is learning. Let's make sure labels are correct, etc.
