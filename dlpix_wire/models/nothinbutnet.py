@@ -48,6 +48,7 @@ class Nothinbutnet(Model):
     self.logger.info(layer.shape)
     layer = Dropout(0.1)(layer)
 
+
     layer = Conv3D(64, (3,3,3), strides=(3,3,3), 
                    activation='relu', padding='same', 
                    data_format='channels_first',
@@ -58,7 +59,7 @@ class Nothinbutnet(Model):
                           name='block2_pool')(layer)
     self.logger.info(layer.shape)
 
-    
+    '''    
     layer = Conv3D(128, (5,5,5), strides=(2,2,2), 
                    activation='relu', padding='same', 
                    data_format='channels_first',
@@ -68,11 +69,11 @@ class Nothinbutnet(Model):
                           data_format='channels_first', 
                           name='block3_pool')(layer)
     self.logger.info(layer.shape)
-
+    
     layer = BatchNormalization(axis=2, name="block3_norm")(layer)
 
     self.logger.info(layer.shape)
-    
+    '''
     
     layer = Dropout(0.1)(layer)
 
@@ -112,7 +113,7 @@ class Nothinbutnet(Model):
     super(Nothinbutnet, self).__init__(self._input, layer)
     self.logger.info("Compiling Model")
 
-    ogd = O.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
+    ogd = O.SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True) # was lr=0.001, EC 24-Jan-2018
     self.compile(loss='binary_crossentropy', optimizer=ogd, metrics=['categorical_accuracy'])
 
 

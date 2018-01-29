@@ -146,9 +146,10 @@ class Gen_wires(BaseDataGenerator):
       self.file_index = int(np.random.randint(len(self._files), size=1))
 #      self.current_file = h5py.File(self._files[self.file_index], 'r')
       self.current_file = np.load(self._files[self.file_index])
+      self.current_index = int(np.random.randint(self.current_file.shape[0], size=1))
       self.handlelabels(self.file_index)
       self.filterZeros()
-      self.current_index = int(np.random.randint(self.current_file[self._dataset].shape[0], size=1))
+
 
       self.logger.info("Reading npy file: {}".format(self._files[self.file_index]))
       multifile = True
@@ -167,7 +168,7 @@ class Gen_wires(BaseDataGenerator):
 
       xapp = np.append(xapp,x,axis=0)
       yapp = np.append(yapp,y,axis=0)
-      nevts += xapp.shape[0]
+      nevts += xapp.shape[1]
 
     if multifile:
       return (xapp,yapp)

@@ -24,9 +24,9 @@ class Gen3D_pix(BaseDataGenerator):
     self.current_index=0
 #    self.truth = ["eminus", "eplus", "proton", "pizero", "piplus", "piminus", "muminus",  "muplus",  "kplus", "gamma"]
 
-    self.truth = ["e-", "pi0", "gamma"]
+    self.truth = ["e-", "pi0", "gamma","p","mu"]
 
-    self.labelvec = np.zeros(3)
+    self.labelvec = np.zeros(5)
     
     self.logger.info("Initializing npy file object with value: {}".format(self._files[self.current_index]))
 
@@ -60,13 +60,13 @@ class Gen3D_pix(BaseDataGenerator):
     dataT = data.T
     # dataT.shape => 3678, 3 e.g. meaning 3678 deositions.
                                     ##  view,chan,x
-    H,edges = np.histogramdd(dataT,bins=(250,600,250),weights=self.current_file[ind,]['sdElec'])
+    H,edges = np.histogramdd(dataT,bins=(250,600,250),range=((0.,250.),(-300.,300.),(0.,250.)),weights=self.current_file[ind,]['sdElec'])
 #                    (Pdb) H.shape
 
 #                    
 
     y[ind,] = H
-
+#    pdb.set_trace()
     d = {}
 
     ptype = self._files[index].split("/")[-1].split("_")[-1].split(".")[0]
@@ -133,27 +133,30 @@ class Gen3D_pix(BaseDataGenerator):
     """
 
 
-#    import pdb
+    import pdb
 
     multifile = False
 
 ## This line and x=np.ndarray(1,1,tmp_x...) below need to be uncommented for 3D models, not so for 2D.
-    xapp = np.empty(np.append(1,np.append(1,self.current_file[self._dataset].shape[1:])))
+    xapp = np.empty(np.append(0,np.append(1,self.current_file[self._dataset].shape[1:])))
 #    xapp = np.empty(np.append(1,self.current_file[self._dataset].shape[1:]))
-    yapp = np.empty(self.current_file[self._labelset].shape)
+    yapp = np.empty(np.append(0,self.current_file[self._labelset].shape[1:]))
     nevts = 0
+
 
     while self.batch_size > nevts:
       self.file_index = int(np.random.randint(len(self._files), size=1))
 #      self.current_file = h5py.File(self._files[self.file_index], 'r')
       self.current_file = np.load(self._files[self.file_index])
+      self.current_index = int(np.random.randint(self.current_file.shape[0], size=1))
       self.handlelabels(self.file_index)
       self.filterZeros()
-      self.current_index = int(np.random.randint(self.current_file[self._dataset].shape[0], size=1))
+
 
       self.logger.info("Reading npy file: {}".format(self._files[self.file_index]))
       multifile = True
 
+#      pdb.set_trace()
       tmp_x =  self.current_file[self._dataset][self.current_index] # Note, no longer ":"! Just take one event. EC, 4-Oct-2017.
 
 
@@ -163,12 +166,14 @@ class Gen3D_pix(BaseDataGenerator):
       y = self.current_file[self._labelset]
 
 
+      
       if len(x) == 0 or len(y)==0 or not len(x) == len(y):
         return next(self)
 
       xapp = np.append(xapp,x,axis=0)
       yapp = np.append(yapp,y,axis=0)
-      nevts += xapp.shape[0]
+
+      nevts += xapp.shape[1]
 
     if multifile:
       return (xapp,yapp)

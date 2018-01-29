@@ -95,6 +95,8 @@ class VGG16_hand_crafted(Model):
     self.logger.info("Compiling Model")
 
     ogd = O.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
+
+#    ogd = O.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)  # some argument not liked here. EC 24-Jan-2018
     self.compile(loss='binary_crossentropy', optimizer=ogd, metrics=['categorical_accuracy'])
 
 #    self.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
