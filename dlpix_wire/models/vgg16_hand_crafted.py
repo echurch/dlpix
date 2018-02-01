@@ -20,15 +20,19 @@ class VGG16_hand_crafted(Model):
     x = generator.output
     self._input = Input(shape=x)
 
+    import pdb
+
     self.logger.info(self._input.shape)
 
     # Could drop this to ~240x240 before even getting going, as a "sanity" check.
+    '''
     layer = MaxPooling2D((8, 8), strides=(8, 8),  data_format='channels_first', 
                           name='block0_pool')(self._input)
     self.logger.info(layer.shape)
-
+    '''
+    
     layer = Conv2D(64, (3,3) , activation='relu', padding='same', data_format='channels_first',
-                          name='block1_conv1')(layer)
+                          name='block1_conv1')(self._input) ###(layer)
     self.logger.info(layer.shape)
     layer = Conv2D(64, (3,3), activation='relu', padding='same', data_format='channels_first' ,
                           name='block1_conv2')(layer)

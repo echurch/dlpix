@@ -218,12 +218,12 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
   import pdb
 #  pdb.set_trace()
 #  generator = Gen2D_v5(file_list, 'image/wires','label/type', batch_size=40, middle=False)
-  generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=10, middle=False)
+  generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=6, middle=False)
 #  end = max(len(file_list)-10,0)
   import glob
 #  file_list_v =  glob.glob("/microboone/ec/valid_singles/*")
 #  file_list_v =  glob.glob("/data/dlhep/quantized_h5files/*.h5")
-  validation_generator = Gen_wires(file_list, 'image/wires', 'label/type', batch_size=10, middle=False)
+  validation_generator = Gen_wires(file_list, 'image/wires', 'label/type', batch_size=6, middle=False)
 #  validation_generator = Gen3D_v5(file_list, 'image/wires', 'label/type', batch_size=80, middle=False)
 
 #  model = Nothinbutnet(generator)
@@ -239,10 +239,10 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
                                       workers=1,
                                       verbose=1,
 #                                      max_q_size=8,
-                                      max_q_size=4,
+                                      max_queue_size=1,
                                       pickle_safe=False,
                                       validation_data=validation_generator,
-                                      validation_steps = 3, # with batch_size=10 this gives enough events (30) to validate on. This is slow otherwise.
+                                      validation_steps = 1, # with batch_size=10 this gives enough events (30) to validate on. This is slow otherwise.
                                       callbacks=[
                                         ModelCheckpoint(output, 
                                           monitor='loss', 
@@ -271,19 +271,20 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
 
 #  pred10 = model.predict_generator(validation_generator,10) # 10 event predictions from last iteration of model -- I think
   import numpy as np
-  pred10 = np.empty((0,3))
-  label10 = np.empty((0,3))
+  pred10 = np.empty((0,5))
+  label10 = np.empty((0,5))
 
   # Get 10 predictions
   for i in range(10): # (100)
     x,y = validation_generator.next()
 #    if i%100 == 0:
     logging.info( "getting a prediction and a label for event " + str(i))
+    px = model.predict(x)
+    logging.info( "prediction is " + str(px))
+    logging.info( "label is " + str(y))
 
-
-    pred10 = np.row_stack((pred10,model.predict(x) ) )
+    pred10 = np.row_stack((pred10,px ) )
     label10 = np.row_stack((label10,y) ) 
-
 
   training_history = {'epochs': training_output.epoch, 'acc': training_output.history['categorical_accuracy'], 'loss': training_output.history['loss'], 'val_acc': training_output.history['val_categorical_accuracy'], 'val_loss': training_output.history['val_loss'], 'val_predictions': np.around(pred10,decimals=3).tolist(), 'val_labels': np.around(label10,decimals=3).tolist() }
   import json
@@ -316,13 +317,13 @@ def train_nbn3D(steps, epochs,weights, history, output, file_list):
 #  pdb.set_trace()
 
 # The 2nd, 3rd args here in both cases to Gen3D_pix are just place holders. I over-write these values later.
-  generator = Gen3D_pix(file_list, 'image/pixels','label/type', batch_size=8, middle=False)
+  generator = Gen3D_pix(file_list, 'image/pixels','label/type', batch_size=4, middle=False)
 
 #  end = max(len(file_list)-10,0)
   import glob
 #  file_list_v =  glob.glob("/microboone/ec/valid_singles/*")
 #  file_list_v =  glob.glob("/data/dlhep/quantized_h5files/*.h5")
-  validation_generator = Gen3D_pix(file_list, 'image/pixels', 'label/type', batch_size=6, middle=False)
+  validation_generator = Gen3D_pix(file_list, 'image/pixels', 'label/type', batch_size=4, middle=False)
 
 
   model = Nothinbutnet(generator)
@@ -337,7 +338,7 @@ def train_nbn3D(steps, epochs,weights, history, output, file_list):
                                       workers=1,
                                       verbose=1,
 #                                      max_q_size=8,
-                                      max_q_size=4,
+                                      max_queue_size=1,
                                       pickle_safe=False,
                                       validation_data=validation_generator,
                                       validation_steps = 1,
@@ -351,12 +352,12 @@ def train_nbn3D(steps, epochs,weights, history, output, file_list):
                                           period=10),
                                         ReduceLROnPlateau(monitor='loss', # I changed from val_loss
                                           factor=0.1, 
-                                          patience=5, # epochs
+                                          patience=15, # epochs
                                           verbose=True, 
                                           mode='auto', 
                                           epsilon=1.0E-3, 
                                           cooldown=0, 
-                                                          min_lr=1.0E-9)
+                                                          min_lr=1.0E-6)
 #                                          TensorBoard(log_dir='./logs2',
 #                                                      histogram_freq=0, 
 #                                                      write_graph=True, 

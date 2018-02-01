@@ -24,9 +24,9 @@ class Gen_wires(BaseDataGenerator):
     self.current_index=0
 #    self.truth = ["eminus", "eplus", "proton", "pizero", "piplus", "piminus", "muminus",  "muplus",  "kplus", "gamma"]
 
-    self.truth = ["e-", "pi0", "gamma"]
+    self.truth = ["e-", "pi0", "gamma", "p", "mu"]
 
-    self.labelvec = np.zeros(3)
+    self.labelvec = np.zeros(5)
     
     self.logger.info("Initializing npy file object with value: {}".format(self._files[self.current_index]))
 
@@ -153,8 +153,8 @@ class Gen_wires(BaseDataGenerator):
 
       self.logger.info("Reading npy file: {}".format(self._files[self.file_index]))
       multifile = True
-
-      tmp_x =  self.current_file[self._dataset][self.current_index] # Note, no longer ":"! Just take one event. EC, 4-Oct-2017.
+      # self.current_file not in fact a file at this point! handlelabels() turned it into an array.
+      tmp_x =  self.current_file[self._dataset][self.current_index] 
 
 
       x = np.ndarray(shape=(1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))
@@ -168,10 +168,11 @@ class Gen_wires(BaseDataGenerator):
 
       xapp = np.append(xapp,x,axis=0)
       yapp = np.append(yapp,y,axis=0)
-      nevts += xapp.shape[1]
+      nevts += 1
 
     if multifile:
-      return (xapp,yapp)
+
+      return (xapp[:, 2:3,:,:],yapp)  # only Collection. (2:3 means 2. Whereas 2:2 will collapse the array by one dimension.)
 
     tmp_x = self.current_file[self._dataset][self.current_index:self.current_index+self.batch_size]
     x = np.ndarray(shape=(1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))
