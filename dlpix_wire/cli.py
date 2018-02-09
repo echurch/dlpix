@@ -206,6 +206,7 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
   from dlpix_wire.generators.gen_wires_npy import Gen_wires
   from dlpix_wire.models.nothinbutnet import Nothinbutnet
   from dlpix_wire.models.vgg16_hand_crafted import VGG16_hand_crafted
+  from dlpix_wire.models.vgg16 import VGG16
   import tensorflow as tf
   logging.basicConfig(level=logging.DEBUG)
   logger = logging.getLogger()
@@ -217,17 +218,18 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
 
   import pdb
 #  pdb.set_trace()
-#  generator = Gen2D_v5(file_list, 'image/wires','label/type', batch_size=40, middle=False)
-  generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=6, middle=False)
+
+  generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=5, middle=False)
+
 #  end = max(len(file_list)-10,0)
   import glob
 #  file_list_v =  glob.glob("/microboone/ec/valid_singles/*")
-#  file_list_v =  glob.glob("/data/dlhep/quantized_h5files/*.h5")
-  validation_generator = Gen_wires(file_list, 'image/wires', 'label/type', batch_size=6, middle=False)
-#  validation_generator = Gen3D_v5(file_list, 'image/wires', 'label/type', batch_size=80, middle=False)
 
-#  model = Nothinbutnet(generator)
+  validation_generator = Gen_wires(file_list, 'image/wires', 'label/type', batch_size=5, middle=False)
+
   model = VGG16_hand_crafted(generator)
+#  model = VGG16(generator)
+  
   global _model
   _model = model
   if weights is not None:
@@ -253,7 +255,7 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
                                           period=10),
                                         ReduceLROnPlateau(monitor='loss', # I changed from val_loss
                                           factor=0.1, 
-                                          patience=5, # epochs
+                                          patience=25, # epochs
                                           verbose=True, 
                                           mode='auto', 
                                           epsilon=1.0E-3, 
@@ -271,8 +273,8 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
 
 #  pred10 = model.predict_generator(validation_generator,10) # 10 event predictions from last iteration of model -- I think
   import numpy as np
-  pred10 = np.empty((0,5))
-  label10 = np.empty((0,5))
+  pred10 = np.empty((0,3))
+  label10 = np.empty((0,3))
 
   # Get 10 predictions
   for i in range(10): # (100)
@@ -352,7 +354,7 @@ def train_nbn3D(steps, epochs,weights, history, output, file_list):
                                           period=10),
                                         ReduceLROnPlateau(monitor='loss', # I changed from val_loss
                                           factor=0.1, 
-                                          patience=15, # epochs
+                                          patience=10, # epochs
                                           verbose=True, 
                                           mode='auto', 
                                           epsilon=1.0E-3, 

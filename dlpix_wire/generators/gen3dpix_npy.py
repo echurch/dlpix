@@ -59,6 +59,11 @@ class Gen3D_pix(BaseDataGenerator):
 
     data = np.array((self.current_file[ind,]['sdX'][self.current_file[ind,]['sdTPC']==3],self.current_file[ind,]['sdY'][self.current_file[ind,]['sdTPC']==3],self.current_file[ind,]['sdZ'][self.current_file[ind,]['sdTPC']==3] ))
     dataT = data.T
+
+    if dataT.sum() is 0:
+      print("Problem! Image is empty for ind " + str(ind))
+      raise
+    
     # dataT.shape => 3678, 3 e.g. meaning 3678 deositions.
                                     ##  view,chan,x
     H,edges = np.histogramdd(dataT,bins=(250,600,250),range=((0.,250.),(0.,600.),(0.,250.)),weights=self.current_file[ind,]['sdElec'][self.current_file[ind,]['sdTPC']==3])
@@ -69,11 +74,11 @@ class Gen3D_pix(BaseDataGenerator):
     y[ind,] = H
     
 #    pdb.set_trace()
-    import matplotlib
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
-    plt.scatter(dataT[:,0],dataT[:,1])
-    plt.savefig('scat.png')
+#    import matplotlib
+#    matplotlib.use('Agg')
+#    import matplotlib.pyplot as plt
+#    plt.scatter(dataT[:,0],dataT[:,1])
+#    plt.savefig('scat.png')
     
     d = {}
 
@@ -173,11 +178,11 @@ class Gen3D_pix(BaseDataGenerator):
       x[0] = tmp_x 
       y = self.current_file[self._labelset]
       
-#      pdb.set_trace()      
       
       if len(x) == 0 or len(y)==0 or not len(x) == len(y):
         return next(self)
 
+      
       xapp = np.append(xapp,x,axis=0)
       yapp = np.append(yapp,y,axis=0)
 
