@@ -25,10 +25,10 @@ class Gen_wires(BaseDataGenerator):
     self._plot=0
 #    self.truth = ["eminus", "eplus", "proton", "pizero", "piplus", "piminus", "muminus",  "muplus",  "kplus", "gamma"]
 
-#    self.truth = ["e-", "pi0", "gamma", "p", "mu"]
-    self.truth = ["pi0", "p", "mu"]
+    self.truth = ["e-", "pi0", "gamma", "p", "mu"]
+#    self.truth = ["pi0", "p", "mu"]
 
-    self.labelvec = np.zeros(3)
+    self.labelvec = np.zeros(5)
     
     self.logger.info("Initializing npy file object with value: {}".format(self._files[self.current_index]))
 
