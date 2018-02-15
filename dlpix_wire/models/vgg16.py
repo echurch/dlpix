@@ -29,7 +29,7 @@ class VGG16(Model):
     import pdb
 
     # drop this to ~240x240 before even getting going, as a "sanity" check.
-    layer = MaxPooling2D((1, 1), strides=(1, 1),  data_format='channels_first', 
+    layer = MaxPooling2D((2, 2), strides=(2, 2),  data_format='channels_first', 
                           name='block0_pool')(self._input)
     self.logger.info(layer.shape)
 
@@ -50,7 +50,7 @@ class VGG16(Model):
     super(VGG16, self).__init__(self._input, layer)
     self.logger.info("Compiling Model")
 
-    ogd = O.SGD(lr=0.01, decay=1e-6, momentum=0.3, nesterov=True)
+    ogd = O.SGD(lr=0.1, decay=1e-6, momentum=0.3, nesterov=True)
     self.compile(loss='binary_crossentropy', optimizer=ogd, metrics=['categorical_accuracy'])
 
 #    self.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])

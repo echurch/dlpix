@@ -25,10 +25,10 @@ class Gen_wires(BaseDataGenerator):
     self._plot=0
 #    self.truth = ["eminus", "eplus", "proton", "pizero", "piplus", "piminus", "muminus",  "muplus",  "kplus", "gamma"]
 
-    self.truth = ["e-", "pi0", "gamma", "p", "mu"]
-#    self.truth = ["pi0", "p", "mu"]
+#    self.truth = ["e-", "pi0", "gamma", "p", "mu"]
+    self.truth = ["pi0", "p", "mu"]
 
-    self.labelvec = np.zeros(5)
+    self.labelvec = np.zeros(3)
     
     self.logger.info("Initializing npy file object with value: {}".format(self._files[self.current_index]))
 
@@ -67,6 +67,7 @@ class Gen_wires(BaseDataGenerator):
       print ("Scream/complain: Empty image. ind is " + str(ind))
       raise
 
+
     # Bail now if there aren't enough pixels with hits in them
     if len(self.current_file[ind,]['sdElec'][self.current_file[ind,]['sdTPC']==3]) < 500:
       self.logger.info("Bailing on this event with only {} energy depositions".format(len(self.current_file[ind,]['sdElec'][self.current_file[ind,]['sdTPC']==3])))
@@ -87,20 +88,21 @@ class Gen_wires(BaseDataGenerator):
     ind1 = np.argmin(dataT2[:,1][dataT2[:,0]==1][mask])
     mask = (dataT2[:,1][dataT2[:,0]==2] > 2.0)  # 2.0 being some minimum activity
     ind2 = np.argmin(dataT2[:,1][dataT2[:,0]==2][mask])
-    minpossible = np.array( [dataT2[:,1][dataT2[:,0]==0][ind0],dataT2[:,1][dataT2[:,0]==0][ind1],dataT2[:,1][dataT2[:,0]==2][ind2]] )
+    minpossible = np.array( [dataT2[:,1][dataT2[:,0]==0][ind0],dataT2[:,1][dataT2[:,0]==1][ind1],dataT2[:,1][dataT2[:,0]==2][ind2]] )
                                                                
     minchan = np.amax(np.row_stack((minpossible-100,minchanguess)),axis=0)  # try to show trailing 100 wires, but not if it goes below true physical min wire.
     
     dataT2[:,1][dataT2[:,0]==0] -= minchan[0]
     dataT2[:,1][dataT2[:,0]==1] -= minchan[1]
     dataT2[:,1][dataT2[:,0]==2] -= minchan[2]
-    H,edges = np.histogramdd(dataT,bins=(3,600,500),range=((0.,3.0),(0.,600.),(0.,250.)),weights=self.current_file[ind,]['sdElec'][self.current_file[ind,]['sdTPC']==3])
+    
+    H,edges = np.histogramdd(dataT2,bins=(3,600,500),range=((-0.5,2.5),(0.,600.),(0.,250.)),weights=self.current_file[ind,]['sdElec'][self.current_file[ind,]['sdTPC']==3])
+
 #                    (Pdb) H.shape
 #                    (3, 2560, 3200)
 #                    
     y[ind,] = H
 
-    
     if self._plot<9:
       import matplotlib
       matplotlib.use('Agg')
@@ -109,8 +111,10 @@ class Gen_wires(BaseDataGenerator):
       plt.imshow(y[ind,][0,])
       plt.savefig('scat_U_'+str(ind)+'.png')
       plt.close()
+      plt.imshow(y[ind,][1,])
+      plt.savefig('scat_V_'+str(ind)+'.png')
+      plt.close()
       plt.imshow(y[ind,][2,])
-
       plt.savefig('scat_Z_'+str(ind)+'.png')
       self._plot+=1      
       plt.close()
@@ -222,7 +226,7 @@ class Gen_wires(BaseDataGenerator):
       nevts += 1
 
     if multifile:
-      return (xapp,yapp)  # [:, 2:3,:,:] -- only Collection. (2:3 means 2. Whereas 2:2 will collapse the array by one dimension.)
+      return (xapp[:, 2:3,:,:],yapp)  # for hand-crafted vgg: xapp[:, 2:3,:,:] -- only Collection. (2:3 means 2. Whereas 2:2 will collapse the array by one dimension.)
 
     tmp_x = self.current_file[self._dataset][self.current_index:self.current_index+self.batch_size]
     x = np.ndarray(shape=(1, tmp_x.shape[0],  tmp_x.shape[1],  tmp_x.shape[2]))

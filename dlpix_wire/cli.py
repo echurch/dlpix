@@ -219,16 +219,16 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
   import pdb
 #  pdb.set_trace()
 
-  generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=16, middle=False)
+  generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=4, middle=False)
 
 #  end = max(len(file_list)-10,0)
   import glob
 #  file_list_v =  glob.glob("/microboone/ec/valid_singles/*")
 
-  validation_generator = Gen_wires(file_list, 'image/wires', 'label/type', batch_size=16, middle=False)
+  validation_generator = Gen_wires(file_list, 'image/wires', 'label/type', batch_size=4, middle=False)
 
-#  model = VGG16_hand_crafted(generator)
-  model = VGG16(generator)
+  model = VGG16_hand_crafted(generator)
+#  model = VGG16(generator)
   
   global _model
   _model = model
@@ -273,8 +273,8 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
 
 #  pred10 = model.predict_generator(validation_generator,10) # 10 event predictions from last iteration of model -- I think
   import numpy as np
-  pred10 = np.empty((0,5))
-  label10 = np.empty((0,5))
+  pred10 = np.empty((0,3))
+  label10 = np.empty((0,3))
 
   # Get 10 predictions
   for i in range(10): # (100)

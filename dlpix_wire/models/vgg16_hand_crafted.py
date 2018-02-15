@@ -32,27 +32,27 @@ class VGG16_hand_crafted(Model):
 
     
     layer = Conv2D(64, (3,3) , activation='relu', padding='same', data_format='channels_first',
-                          name='block1_conv1')(self._input) ###(layer)
-    self.logger.info(layer.shape)
-    '''
+                          name='block1_conv1')(layer)
+
     layer = Conv2D(64, (3,3), activation='relu', padding='same', data_format='channels_first' ,
                           name='block1_conv2')(layer)
-    self.logger.info(layer.shape)
+
     layer = MaxPooling2D((2, 2), strides=(2, 2),  data_format='channels_first',
                           name='block1_pool')(layer)
-
     self.logger.info(layer.shape)
+    
 
-    layer = Conv2D(128, (3,3), activation='relu', padding='same',  data_format='channels_first',
+    
+    layer = Conv2D(128, (12,12), activation='relu', padding='same',  data_format='channels_first',
                           name='block2_conv1')(layer)
-
-    self.logger.info(layer.shape)
     layer = Conv2D(128, (3,3), activation='relu', padding='same',  data_format='channels_first',
                           name='block2_conv2')(layer)
-    self.logger.info(layer.shape)
 
     layer = MaxPooling2D((2, 2), strides=(2, 2),  data_format='channels_first', 
                           name='block2_pool')(layer)
+    self.logger.info(layer.shape)
+    
+    '''
     self.logger.info(layer.shape)
     layer = Conv2D(256, (3,3), activation='relu', padding='same',  data_format='channels_first',
                           name='block3_conv1')(layer)
@@ -90,13 +90,15 @@ class VGG16_hand_crafted(Model):
     layer = Conv2D(512, (3,3), activation='relu', padding='same',  data_format='channels_first',
                           name='block5_conv2')(layer)
     self.logger.info(layer.shape)
-    layer = Conv2D(512, (3,3), activation='relu', padding='same',  data_format='channels_first',
+
+    '''
+    layer = Conv2D(512, (25,20), activation='relu', padding='same',  data_format='channels_first',
                           name='block5_conv3')(layer)
 
     self.logger.info(layer.shape)
-    layer = MaxPooling2D((2, 2), strides=(2, 2), data_format='channels_first',
+    layer = MaxPooling2D((25, 20), strides=(25, 20), data_format='channels_first',
                           name='block5_pool')(layer)
-    '''
+
     # Classification block
     self.logger.info(layer.shape)
     layer = Flatten(name='flatten')(layer)
@@ -107,7 +109,7 @@ class VGG16_hand_crafted(Model):
     super(VGG16_hand_crafted, self).__init__(self._input, layer)
     self.logger.info("Compiling Model")
 
-    ogd = O.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    ogd = O.SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
 
 #    ogd = O.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)  # some argument not liked here. EC 24-Jan-2018
     self.compile(loss='binary_crossentropy', optimizer=ogd, metrics=['categorical_accuracy'])
