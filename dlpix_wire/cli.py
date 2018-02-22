@@ -219,13 +219,13 @@ def train_vgg(steps, epochs,weights, history, output, file_list):
   import pdb
 #  pdb.set_trace()
 
-  generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=4, middle=False)
+  generator = Gen_wires(file_list, 'image/wires','label/type', batch_size=15, middle=False)
 
 #  end = max(len(file_list)-10,0)
   import glob
 #  file_list_v =  glob.glob("/microboone/ec/valid_singles/*")
 
-  validation_generator = Gen_wires(file_list, 'image/wires', 'label/type', batch_size=4, middle=False)
+  validation_generator = Gen_wires(file_list, 'image/wires', 'label/type', batch_size=15, middle=False)
 
   model = VGG16_hand_crafted(generator)
 #  model = VGG16(generator)

@@ -23,7 +23,7 @@ class Gen3D_pix(BaseDataGenerator):
     self.file_index=0
     self.current_index=0
 #    self.truth = ["eminus", "eplus", "proton", "pizero", "piplus", "piminus", "muminus",  "muplus",  "kplus", "gamma"]
-
+    self._plot=0
     self.truth = ["e-", "pi0", "gamma","p","mu"]
 
     self.labelvec = np.zeros(5)
@@ -45,11 +45,10 @@ class Gen3D_pix(BaseDataGenerator):
     pass
 
   def handlelabels(self,index):
-
+    status = 0
 
 #    x = self.current_file['image']['wires'] # from hdf5 days.
 # Must bin the data evt-by-evt, since each event has different number of data elements (sim charge depositions)
-
 
     y = np.zeros((len(self.current_file['sdEvt']),250,600,250))
     ind = self.current_index
@@ -65,20 +64,68 @@ class Gen3D_pix(BaseDataGenerator):
       raise
     
     # dataT.shape => 3678, 3 e.g. meaning 3678 deositions.
+    # Bail now if there aren't enough pixels with hits in them
+    if len(self.current_file[ind,]['sdElec'][self.current_file[ind,]['sdTPC']==3]) < 500:
+      self.logger.info("Bailing on this event with only {} energy depositions".format(len(self.current_file[ind,]['sdElec'][self.current_file[ind,]['sdTPC']==3])))
+      status = 1
+      return status
+
+    xmin = np.argmin(dataT[:,0][dataT[:,0]>2])
+    ymin = np.argmin(dataT[:,1][dataT[:,1]>2])
+    zmin = np.argmin(dataT[:,2][dataT[:,2]>2])
+    weights=self.current_file[ind,]['sdElec'][self.current_file[ind,]['sdTPC']==3]
                                     ##  view,chan,x
-    H,edges = np.histogramdd(dataT,bins=(250,600,250),range=((0.,250.),(0.,600.),(0.,250.)),weights=self.current_file[ind,]['sdElec'][self.current_file[ind,]['sdTPC']==3])
+    H,edges = np.histogramdd(dataT,bins=(250,600,250),range=((0.,250.),(0.,600.),(0.,250.)),weights=weights)
 #                    (Pdb) H.shape
 
-#                    
+    # Crop this back to central 2mx2mx2m about max activity point
+    y = np.zeros((len(self.current_file['sdEvt']),200,200,200))
+    (xmax,ymax,zmax) = np.unravel_index(np.argmax(H,axis=None),H.shape)
+    # keep min past the minimal barrier, but not too close to far wall in each dimension.
 
-    y[ind,] = H
+    ix = np.maximum(xmax-100,0); ix = np.minimum(ix,250-200)
+    iy = np.maximum(ymax-100,0); iy = np.minimum(iy,600-200)
+    iz = np.maximum(zmax-100,0); iz = np.minimum(iz,250-200)
+
+    y[ind,] = H[ix:ix+200,iy:iy+200,iz:iz+200]
+
+
+    if self._plot<9:
+      '''
+      import matplotlib
+      from mpl_toolkits.mplot3d import Axes3D
+      matplotlib.use('Agg')
+      import matplotlib.pyplot as plt
+
+      fig = plt.figure()
+      ax = fig.add_subplot(111, projection='3d')
+      plt.imshow(y[ind,][2,])
+      plt.colorbar()
+
+      plt.savefig('scat_xy_'+str(ind)+'.png')
+      ax.scatter(y[ind,])
+      self._plot+=1      
+      plt.close()
+      '''
     
-#    pdb.set_trace()
-#    import matplotlib
-#    matplotlib.use('Agg')
-#    import matplotlib.pyplot as plt
-#    plt.scatter(dataT[:,0],dataT[:,1])
-#    plt.savefig('scat.png')
+
+      import matplotlib
+      matplotlib.use('Agg')
+      import matplotlib.pyplot as plt
+      from mpl_toolkits.mplot3d import Axes3D
+      fig = plt.figure(1)
+      fig.clf()
+      ax = Axes3D(fig)
+      ax.scatter(dataT[:,0],dataT[:,1],dataT[:,0],c='b',marker='o', s=3) # s=np.log10(weights/np.mean(weights))+3 )
+      ax.plot([], [], c='b', marker='o')
+      ax.set_xlabel('X (drift)')
+      ax.set_ylabel('Y (up))')
+      ax.set_zlabel('Z (beam)')
+      plt.draw()
+      plt.savefig('scat_xyz_'+str(ind)+'.png')
+      self._plot+=1      
+      plt.close()
+
     
     d = {}
 
@@ -99,7 +146,7 @@ class Gen3D_pix(BaseDataGenerator):
 
     d[self._labelset] = np.expand_dims(labelvectmp,axis=0)
     self.current_file = d
-    return
+    return status
 
   @property
   def output(self):
@@ -151,6 +198,8 @@ class Gen3D_pix(BaseDataGenerator):
     multifile = False
 
 ## This line and x=np.ndarray(1,1,tmp_x...) below need to be uncommented for 3D models, not so for 2D.
+
+
     xapp = np.empty(np.append(0,np.append(1,self.current_file[self._dataset].shape[1:])))
 #    xapp = np.empty(np.append(1,self.current_file[self._dataset].shape[1:]))
     yapp = np.empty(np.append(0,self.current_file[self._labelset].shape[1:]))
@@ -162,7 +211,8 @@ class Gen3D_pix(BaseDataGenerator):
 #      self.current_file = h5py.File(self._files[self.file_index], 'r')
       self.current_file = np.load(self._files[self.file_index])
       self.current_index = int(np.random.randint(self.current_file.shape[0], size=1))
-      self.handlelabels(self.file_index)
+      if self.handlelabels(self.file_index):  # This returns non-zero if any total image electron deposition is too low
+        continue
       self.filterZeros()
 
 

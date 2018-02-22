@@ -43,32 +43,25 @@ class VGG16_hand_crafted(Model):
     
 
     
-    layer = Conv2D(128, (12,12), activation='relu', padding='same',  data_format='channels_first',
-                          name='block2_conv1')(layer)
-    layer = Conv2D(128, (3,3), activation='relu', padding='same',  data_format='channels_first',
-                          name='block2_conv2')(layer)
-
-    layer = MaxPooling2D((2, 2), strides=(2, 2),  data_format='channels_first', 
-                          name='block2_pool')(layer)
-    self.logger.info(layer.shape)
     
-    '''
+    
     self.logger.info(layer.shape)
     layer = Conv2D(256, (3,3), activation='relu', padding='same',  data_format='channels_first',
                           name='block3_conv1')(layer)
 
-    self.logger.info(layer.shape)
+
     layer = Conv2D(256, (3,3), activation='relu', padding='same',  data_format='channels_first',
                           name='block3_conv2')(layer)
-    self.logger.info(layer.shape)
+
     layer = Conv2D(256, (3,3), activation='relu', padding='same',  data_format='channels_first',
                           name='block3_conv3')(layer) 
 
-    self.logger.info(layer.shape)
-    layer = MaxPooling2D((2, 2), strides=(2, 2), data_format='channels_first',
+    layer = MaxPooling2D((3, 3), strides=(3, 3), data_format='channels_first',
                           name='block3_pool')(layer)
-
     self.logger.info(layer.shape)
+    '''
+
+
     layer = Conv2D(512, (3,3), activation='relu', padding='same',  data_format='channels_first',
                           name='block4_conv1')(layer)
     self.logger.info(layer.shape)
@@ -92,11 +85,10 @@ class VGG16_hand_crafted(Model):
     self.logger.info(layer.shape)
 
     '''
-    layer = Conv2D(512, (25,20), activation='relu', padding='same',  data_format='channels_first',
+    layer = Conv2D(512, (15,15), activation='relu', padding='same',  data_format='channels_first',
                           name='block5_conv3')(layer)
 
-    self.logger.info(layer.shape)
-    layer = MaxPooling2D((25, 20), strides=(25, 20), data_format='channels_first',
+    layer = MaxPooling2D((15, 15), strides=(15, 15), data_format='channels_first',
                           name='block5_pool')(layer)
 
     # Classification block
