@@ -1,4 +1,4 @@
-1;95;0c1;95;0c# DL for studies for pixel vs wire readout
+DL for studies for pixel vs wire readout
 
 This runs in a Docker container at PNNL. We use python3.5 and then pip install.
 I think I would advocate just using a virtual environment in python, no docker.

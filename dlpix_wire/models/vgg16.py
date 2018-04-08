@@ -27,15 +27,16 @@ class VGG16(Model):
 
     self.logger.info(self._input.shape)
     import pdb
-    pdb.set_trace()
-    
+
     # drop this to ~240x240 before even getting going, as a "sanity" check.
-    layer = MaxPooling2D((2, 3), strides=(2, 3),  data_format='channels_first', 
+    layer = MaxPooling2D((2, 2), strides=(2, 2),  data_format='channels_first', 
                           name='block0_pool')(self._input)
     self.logger.info(layer.shape)
 
     K.set_image_data_format("channels_first")
-    layer = vgg16loc.VGG16(weights=None, include_top=False,input_shape=layer.shape[1:])(layer)
+
+#    layer = vgg16loc.VGG16(weights=None, include_top=False,input_shape=(self._input.shape[1].value,self._input.shape[2].value,self._input.shape[3].value))(self._input) 
+    layer = vgg16loc.VGG16(weights=None, include_top=False,input_shape=(layer.shape[1].value,layer.shape[2].value,layer.shape[3].value))(layer)
     self.logger.info(layer.shape)
 
     
@@ -49,7 +50,7 @@ class VGG16(Model):
     super(VGG16, self).__init__(self._input, layer)
     self.logger.info("Compiling Model")
 
-    ogd = O.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
+    ogd = O.SGD(lr=0.1, decay=1e-6, momentum=0.3, nesterov=True)
     self.compile(loss='binary_crossentropy', optimizer=ogd, metrics=['categorical_accuracy'])
 
 #    self.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
